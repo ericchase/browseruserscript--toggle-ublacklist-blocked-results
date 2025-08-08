@@ -1,7 +1,7 @@
 div.floating-panel {
   align-items: center;
   background: #ffffff;
-  border: 0.125em solid black;
+  border: 0.125em solid red;
   display: inline-flex;
   font-family: Arial, sans-serif;
   gap: 0.75em;

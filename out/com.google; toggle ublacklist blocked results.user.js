@@ -12,7 +12,7 @@
 var panel_default = `div.floating-panel {
   align-items: center;
   background: #ffffff;
-  border: 0.125em solid black;
+  border: 0.125em solid red;
   display: inline-flex;
   font-family: Arial, sans-serif;
   gap: 0.75em;
@@ -210,8 +210,18 @@ Async_WebPlatform_DOM_ReadyState_Callback({
     const panel_checkbox = WebPlatform_Node_Reference_Class(panel.querySelector("#panel-toggle")).as(HTMLInputElement);
     const panel_toggle_label = WebPlatform_Node_Reference_Class(panel.querySelector("#panel-toggle-label")).as(HTMLSpanElement);
     panel_toggle_label.textContent = `show ${blocked_results.length} blocked search results`;
+    if (blocked_results.length === 0) {
+      panel.style.setProperty("display", "none");
+    } else {
+      panel.style.removeProperty("display");
+    }
     setInterval(() => {
       panel_toggle_label.textContent = `show ${blocked_results.length} blocked search results`;
+      if (blocked_results.length === 0) {
+        panel.style.setProperty("display", "none");
+      } else {
+        panel.style.removeProperty("display");
+      }
     }, 1000);
     WebPlatform_Node_QuerySelector("#rso").as(HTMLDivElement).prepend(panel);
     panel_checkbox.addEventListener("input", () => {
