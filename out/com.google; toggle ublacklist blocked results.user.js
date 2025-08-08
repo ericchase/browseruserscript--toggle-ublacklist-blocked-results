@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name        com.google; toggle ublacklist blocked results
 // @match       *://*.google.*/search*
-// @version     1.0.0
+// @version     1.0.1
 // @description 2025/08/08, 5:33:45 AM
 // @run-at      document-start
 // @grant       none
-// @homepageURL https://github.com/ericchase-library/ts-templates-browser-userscript
+// @homepageURL https://github.com/ericchase/browseruserscript--toggle-ublacklist-blocked-results
 // ==/UserScript==
 
 // src/floating-panel/panel.css
@@ -203,7 +203,7 @@ function WebPlatform_Node_QuerySelectorAll(...selectors) {
 // src/com.google; toggle ublacklist blocked results.user.ts
 var parser = new DOMParser;
 Async_WebPlatform_DOM_ReadyState_Callback({
-  async DOMContentLoaded() {
+  async load() {
     WebPlatform_DOM_Inject_CSS(panel_default);
     const blocked_results = WebPlatform_Node_QuerySelectorAll(`div[data-ub-result-block="1"]`).as(HTMLDivElement);
     const panel = WebPlatform_Node_Reference_Class(parser.parseFromString(panel_default2, "text/html").querySelector(".floating-panel")).as(HTMLDivElement);
