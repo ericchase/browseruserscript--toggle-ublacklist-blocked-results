@@ -10,7 +10,7 @@
 
 // src/lib/ericchase/WebPlatform_DOM_Inject_Script.ts
 function WebPlatform_DOM_Inject_Script(code, setup_fn) {
-  const script = document.createElement("script");
+  const script = document.createElement('script');
   setup_fn?.(script);
   script.textContent = code;
   document.body.appendChild(script);
@@ -20,42 +20,64 @@ function WebPlatform_DOM_Inject_Script(code, setup_fn) {
 // src/lib/ericchase/WebPlatform_DOM_ReadyState_Callback.ts
 async function Async_WebPlatform_DOM_ReadyState_Callback(config) {
   async function DOMContentLoaded() {
-    removeEventListener("DOMContentLoaded", DOMContentLoaded);
+    removeEventListener('DOMContentLoaded', DOMContentLoaded);
     await config.DOMContentLoaded?.();
   }
   async function load() {
-    removeEventListener("load", load);
+    removeEventListener('load', load);
     await config.load?.();
   }
   switch (document.readyState) {
-    case "loading":
+    case 'loading':
       if (config.DOMContentLoaded !== undefined) {
-        addEventListener("DOMContentLoaded", DOMContentLoaded);
+        addEventListener('DOMContentLoaded', DOMContentLoaded);
       }
       if (config.load !== undefined) {
-        addEventListener("load", load);
+        addEventListener('load', load);
       }
       break;
-    case "interactive":
+    case 'interactive':
       await config.DOMContentLoaded?.();
       if (config.load !== undefined) {
-        addEventListener("load", load);
+        addEventListener('load', load);
       }
       break;
-    case "complete":
+    case 'complete':
       await config.DOMContentLoaded?.();
       await config.load?.();
       break;
   }
 }
 
-// src/lib/server/constants.ts
-var SERVER_HOST = "127.0.0.1:8000";
+// src/lib/server/info.ts
+function SERVERHOST() {
+  const CheckENV = () => {
+    try {
+      return;
+    } catch {}
+  };
+  const CheckCurrentScript = () => {
+    try {
+      return new URL(document.currentScript.src).host;
+    } catch {}
+  };
+  const CheckMetaUrl = () => {
+    try {
+      return new URL(undefined).host;
+    } catch {}
+  };
+  const CheckError = () => {
+    try {
+      return new URL(new Error().fileName).host;
+    } catch {}
+  };
+  return CheckENV() ?? CheckCurrentScript() ?? CheckMetaUrl() ?? CheckError() ?? window.location.host;
+}
 
 // src/@dev--com.google; toggle ublacklist blocked results.user.ts
 Async_WebPlatform_DOM_ReadyState_Callback({
   async DOMContentLoaded() {
-    WebPlatform_DOM_Inject_Script(await fetch(`http://${SERVER_HOST}/com.google; toggle ublacklist blocked results.user.js`).then((response) => response.text()));
-    WebPlatform_DOM_Inject_Script(await fetch(`http://${SERVER_HOST}/lib/server/hotrefresh.iife.js`).then((response) => response.text()));
-  }
+    WebPlatform_DOM_Inject_Script(await fetch(`http://${SERVERHOST}/com.google; toggle ublacklist blocked results.user.js`).then((response) => response.text()));
+    WebPlatform_DOM_Inject_Script(await fetch(`http://${SERVERHOST}/lib/server/hotrefresh.iife.js`).then((response) => response.text()));
+  },
 });

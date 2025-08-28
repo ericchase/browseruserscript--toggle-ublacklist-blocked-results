@@ -82,7 +82,7 @@ var panel_default2 = `<div class="floating-panel" role="region" aria-label="Sett
 
 // src/lib/ericchase/WebPlatform_DOM_Inject_CSS.ts
 function WebPlatform_DOM_Inject_CSS(styles) {
-  const stylesheet = new CSSStyleSheet;
+  const stylesheet = new CSSStyleSheet();
   stylesheet.replaceSync(styles);
   document.adoptedStyleSheets.push(stylesheet);
   return stylesheet;
@@ -91,29 +91,29 @@ function WebPlatform_DOM_Inject_CSS(styles) {
 // src/lib/ericchase/WebPlatform_DOM_ReadyState_Callback.ts
 async function Async_WebPlatform_DOM_ReadyState_Callback(config) {
   async function DOMContentLoaded() {
-    removeEventListener("DOMContentLoaded", DOMContentLoaded);
+    removeEventListener('DOMContentLoaded', DOMContentLoaded);
     await config.DOMContentLoaded?.();
   }
   async function load() {
-    removeEventListener("load", load);
+    removeEventListener('load', load);
     await config.load?.();
   }
   switch (document.readyState) {
-    case "loading":
+    case 'loading':
       if (config.DOMContentLoaded !== undefined) {
-        addEventListener("DOMContentLoaded", DOMContentLoaded);
+        addEventListener('DOMContentLoaded', DOMContentLoaded);
       }
       if (config.load !== undefined) {
-        addEventListener("load", load);
+        addEventListener('load', load);
       }
       break;
-    case "interactive":
+    case 'interactive':
       await config.DOMContentLoaded?.();
       if (config.load !== undefined) {
-        addEventListener("load", load);
+        addEventListener('load', load);
       }
       break;
-    case "complete":
+    case 'complete':
       await config.DOMContentLoaded?.();
       await config.load?.();
       break;
@@ -197,43 +197,43 @@ function WebPlatform_NodeList_Reference_Class(nodes) {
   return new Class_WebPlatform_NodeList_Reference_Class(nodes);
 }
 function WebPlatform_Node_QuerySelectorAll(...selectors) {
-  return WebPlatform_NodeList_Reference_Class(document.querySelectorAll(selectors.join(",")));
+  return WebPlatform_NodeList_Reference_Class(document.querySelectorAll(selectors.join(',')));
 }
 
 // src/com.google; toggle ublacklist blocked results.user.ts
-var parser = new DOMParser;
+var parser = new DOMParser();
 Async_WebPlatform_DOM_ReadyState_Callback({
   async load() {
     WebPlatform_DOM_Inject_CSS(panel_default);
     const blocked_results = WebPlatform_Node_QuerySelectorAll(`div[data-ub-result-block="1"]`).as(HTMLDivElement);
-    const panel = WebPlatform_Node_Reference_Class(parser.parseFromString(panel_default2, "text/html").querySelector(".floating-panel")).as(HTMLDivElement);
-    const panel_checkbox = WebPlatform_Node_Reference_Class(panel.querySelector("#panel-toggle")).as(HTMLInputElement);
-    const panel_toggle_label = WebPlatform_Node_Reference_Class(panel.querySelector("#panel-toggle-label")).as(HTMLSpanElement);
+    const panel = WebPlatform_Node_Reference_Class(parser.parseFromString(panel_default2, 'text/html').querySelector('.floating-panel')).as(HTMLDivElement);
+    const panel_checkbox = WebPlatform_Node_Reference_Class(panel.querySelector('#panel-toggle')).as(HTMLInputElement);
+    const panel_toggle_label = WebPlatform_Node_Reference_Class(panel.querySelector('#panel-toggle-label')).as(HTMLSpanElement);
     panel_toggle_label.textContent = `show ${blocked_results.length} blocked search results`;
     if (blocked_results.length === 0) {
-      panel.style.setProperty("display", "none");
+      panel.style.setProperty('display', 'none');
     } else {
-      panel.style.removeProperty("display");
+      panel.style.removeProperty('display');
     }
     setInterval(() => {
       panel_toggle_label.textContent = `show ${blocked_results.length} blocked search results`;
       if (blocked_results.length === 0) {
-        panel.style.setProperty("display", "none");
+        panel.style.setProperty('display', 'none');
       } else {
-        panel.style.removeProperty("display");
+        panel.style.removeProperty('display');
       }
     }, 1000);
-    WebPlatform_Node_QuerySelector("#rso").as(HTMLDivElement).prepend(panel);
-    panel_checkbox.addEventListener("input", () => {
+    WebPlatform_Node_QuerySelector('#rso').as(HTMLDivElement).prepend(panel);
+    panel_checkbox.addEventListener('input', () => {
       if (panel_checkbox.checked === true) {
         for (const result of blocked_results) {
-          result.style.setProperty("display", "block", "important");
+          result.style.setProperty('display', 'block', 'important');
         }
       } else {
         for (const result of blocked_results) {
-          result.style.removeProperty("display");
+          result.style.removeProperty('display');
         }
       }
     });
-  }
+  },
 });
