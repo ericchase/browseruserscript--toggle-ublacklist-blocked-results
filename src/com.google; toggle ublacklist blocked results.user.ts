@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        com.google; toggle ublacklist blocked results
 // @match       *://*.google.*/search*
-// @version     1.0.2
+// @version     1.0.3
 // @description 2025/08/08, 5:33:45 AM
 // @run-at      document-start
 // @grant       none
@@ -10,9 +10,13 @@
 
 /**
  * # Changelog
+ * [2025-08-28] 1.0.3
+ * - Basic support for browser dark/light theme.
+ * - Checkbox state saved to localStorage, so user doesn't have to keep clicking the checkbox. This might be undesired by some, time will tell.
  * [2025-08-28] 1.0.2
  * - Cleaner and less distracting panel.
  * - Panel stays behind search area.
+ * - Better detection for blocked results.
  */
 
 import panelcss from './floating-panel/panel.css' assert { type: 'text' };
@@ -31,12 +35,17 @@ const panel_toggle_label = WebPlatform_Node_Reference_Class(panel.querySelector(
 
 const blocked_results = new Set<HTMLDivElement>();
 
+const storage_key = 'ublacklist-show-blocked-search-results';
+panel_checkbox.checked = localStorage.getItem(storage_key) ? true : false;
+
 panel_checkbox.addEventListener('input', () => {
   if (panel_checkbox.checked === true) {
+    localStorage.setItem(storage_key, 'true');
     for (const result of blocked_results) {
       result.style.setProperty('display', 'block', 'important');
     }
   } else {
+    localStorage.removeItem(storage_key);
     for (const result of blocked_results) {
       result.style.removeProperty('display');
     }
@@ -55,6 +64,11 @@ WebPlatform_DOM_Element_Added_Observer_Class({
 }).subscribe((element) => {
   if (element instanceof HTMLDivElement) {
     blocked_results.add(element);
+    if (panel_checkbox.checked === true) {
+      element.style.setProperty('display', 'block', 'important');
+    } else {
+      element.style.removeProperty('display');
+    }
     panel_toggle_label.textContent = `show ${blocked_results.size} blocked search results`;
   }
 });

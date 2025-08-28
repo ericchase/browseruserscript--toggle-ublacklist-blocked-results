@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        com.google; toggle ublacklist blocked results
 // @match       *://*.google.*/search*
-// @version     1.0.2
+// @version     1.0.3
 // @description 2025/08/08, 5:33:45 AM
 // @run-at      document-start
 // @grant       none
@@ -11,7 +11,9 @@
 // src/floating-panel/panel.css
 var panel_default = `div.floating-panel {
   align-items: center;
-  background: lightgray;
+  background: #e2e2e2;
+  border-radius: 0.25em;
+  color: black;
   display: inline-flex;
   font-family: Arial, sans-serif;
   gap: 0.75em;
@@ -21,9 +23,14 @@ var panel_default = `div.floating-panel {
   user-select: none;
   z-index: 10;
 }
+@media (prefers-color-scheme: dark) {
+  div.floating-panel {
+    background: #4d5156;
+    color: #f2f2f2;
+  }
+}
 div.floating-panel > label.panel-label {
   align-items: center;
-  color: #111827;
   cursor: pointer;
   display: flex;
   font-size: 1em;
@@ -31,9 +38,8 @@ div.floating-panel > label.panel-label {
   padding: 0.5em;
 }
 div.floating-panel > label > span.checkbox {
-  background: #fff;
+  background: white;
   border-radius: 0.25em;
-  border: 0.0625em solid #cfcfcf;
   cursor: pointer;
   display: inline-grid;
   min-width: 1.125em;
@@ -43,30 +49,30 @@ div.floating-panel > label > span.checkbox {
   place-items: center;
 }
 div.floating-panel > label > span.checkbox > input {
-  -webkit-appearance: none;
   appearance: none;
+  -webkit-appearance: none;
   border-radius: 0.25em;
   cursor: pointer;
   display: grid;
   font-size: 1em;
-  height: 100%;
   margin: 0;
   outline: none;
   place-items: center;
   width: 100%;
+  height: 100%;
 }
 div.floating-panel > label > span.checkbox > input:checked {
-  background: #0b66ff;
-  border: 0.0625em solid #0b66ff;
+  background: dodgerblue;
 }
+/* forms the check */
 div.floating-panel > label > span.checkbox > input:checked::after {
-  border-bottom: 0.125em solid #fff;
-  border-left: 0.125em solid #fff;
+  border-bottom: 0.125em solid white;
+  border-left: 0.125em solid white;
   content: '';
   display: block;
-  height: 0.25em;
   transform: rotate(-45deg);
   width: 0.5em;
+  height: 0.25em;
 }
 `;
 
@@ -76,7 +82,7 @@ var panel_default2 = `<div class="floating-panel" role="region" aria-label="Sett
     <span class="checkbox" aria-hidden="true">
       <input id="panel-toggle" type="checkbox" aria-labelledby="panel-toggle-label" />
     </span>
-    <span id="panel-toggle-label">show blocked search results</span>
+    <span id="panel-toggle-label">show 0 blocked search results</span>
   </label>
 </div>
 `;
@@ -215,12 +221,16 @@ var panel = WebPlatform_Node_Reference_Class(parser.parseFromString(panel_defaul
 var panel_checkbox = WebPlatform_Node_Reference_Class(panel.querySelector('#panel-toggle')).as(HTMLInputElement);
 var panel_toggle_label = WebPlatform_Node_Reference_Class(panel.querySelector('#panel-toggle-label')).as(HTMLSpanElement);
 var blocked_results = new Set();
+var storage_key = 'ublacklist-show-blocked-search-results';
+panel_checkbox.checked = localStorage.getItem(storage_key) ? true : false;
 panel_checkbox.addEventListener('input', () => {
   if (panel_checkbox.checked === true) {
+    localStorage.setItem(storage_key, 'true');
     for (const result of blocked_results) {
       result.style.setProperty('display', 'block', 'important');
     }
   } else {
+    localStorage.removeItem(storage_key);
     for (const result of blocked_results) {
       result.style.removeProperty('display');
     }
@@ -237,6 +247,11 @@ WebPlatform_DOM_Element_Added_Observer_Class({
 }).subscribe((element) => {
   if (element instanceof HTMLDivElement) {
     blocked_results.add(element);
+    if (panel_checkbox.checked === true) {
+      element.style.setProperty('display', 'block', 'important');
+    } else {
+      element.style.removeProperty('display');
+    }
     panel_toggle_label.textContent = `show ${blocked_results.size} blocked search results`;
   }
 });
