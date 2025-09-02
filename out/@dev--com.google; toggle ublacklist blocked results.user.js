@@ -4,18 +4,9 @@
 // @version     1.0.1
 // @description 2025/08/08, 5:33:45 AM
 // @run-at      document-start
-// @grant       none
+// @grant       GM_addElement
 // @homepageURL https://github.com/ericchase/browseruserscript--toggle-ublacklist-blocked-results
 // ==/UserScript==
-
-// src/lib/ericchase/WebPlatform_DOM_Inject_Script.ts
-function WebPlatform_DOM_Inject_Script(code, setup_fn) {
-  const script = document.createElement('script');
-  setup_fn?.(script);
-  script.textContent = code;
-  document.body.appendChild(script);
-  return script;
-}
 
 // src/lib/ericchase/WebPlatform_DOM_ReadyState_Callback.ts
 async function Async_WebPlatform_DOM_ReadyState_Callback(config) {
@@ -77,7 +68,7 @@ function SERVERHOST() {
 // src/@dev--com.google; toggle ublacklist blocked results.user.ts
 Async_WebPlatform_DOM_ReadyState_Callback({
   async DOMContentLoaded() {
-    WebPlatform_DOM_Inject_Script(await fetch(`http://${SERVERHOST}/com.google; toggle ublacklist blocked results.user.js`).then((response) => response.text()));
-    WebPlatform_DOM_Inject_Script(await fetch(`http://${SERVERHOST}/lib/server/hotrefresh.iife.js`).then((response) => response.text()));
+    GM_addElement('script', { src: `http://${SERVERHOST()}/com.google; toggle ublacklist blocked results.user.js` });
+    GM_addElement('script', { src: `http://${SERVERHOST()}/lib/server/hot-reload.iife.js` });
   },
 });
